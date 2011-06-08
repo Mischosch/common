@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\Common\Annotations\Fixtures\Annotation;
 
-class Secure
+use Doctrine\Common\Annotations\Annotation\Annotation;
+
+class Secure implements Annotation
 {
     private $roles;
 
@@ -13,5 +15,10 @@ class Secure
         }
 
         $this->roles = $values['value'];
+    }
+
+    public function getTargets()
+    {
+        return self::TARGET_METHOD;
     }
 }

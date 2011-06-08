@@ -19,7 +19,7 @@
 
 namespace Doctrine\Common\Annotations;
 
-use Doctrine\Common\Annotations\Annotation as AnnotationInterface;
+use Doctrine\Common\Annotations\Annotation\Annotation as AnnotationInterface;
 use Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
 use Closure;
 use ReflectionClass;
@@ -122,6 +122,7 @@ final class AnnotationReader implements Reader
         $this->preParser = new DocParser;
         $this->preParser->setImports(self::$globalImports);
         $this->preParser->setIgnoreNotImportedAnnotations(true);
+        $this->preParser->setTarget(AnnotationInterface::TARGET_CLASS);
 
         $this->phpParser = new PhpParser;
     }

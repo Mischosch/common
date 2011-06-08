@@ -43,8 +43,6 @@ final class IgnoreAnnotation implements Annotation
 
     public function getTargets()
     {
-        return array(
-            Annotation::TARGET_CLASS => true,
-        );
+        return self::TARGET_CLASS;
     }
 }

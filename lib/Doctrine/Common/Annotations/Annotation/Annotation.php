@@ -3,7 +3,7 @@
 namespace Doctrine\Common\Annotations\Annotation;
 
 /**
- * Marker interface for annotations.
+ * Interface for annotations.
  *
  * This interface _MUST_ be implemented by all annotation classes.
  *
@@ -11,18 +11,16 @@ namespace Doctrine\Common\Annotations\Annotation;
  */
 interface Annotation
 {
-    const TARGET_ALL      = 'all';
-    const TARGET_CLASS    = 'class';
-    const TARGET_METHOD   = 'method';
-    const TARGET_PROPERTY = 'property';
+    const TARGET_CLASS             = 1;
+    const TARGET_METHOD            = 2;
+    const TARGET_PROPERTY          = 4;
+    const TARGET_NESTED_ANNOTATION = 8;
+    const TARGET_ALL               = 15;
 
     /**
-     * Returns an array with allowed usage targets.
+     * Returns the allowed usage targets as bitmask.
      *
-     * The array _keys_ must be one of the class constants. The value must
-     * always be Boolean true.
-     *
-     * @return array
+     * @return integer
      */
     function getTargets();
 }

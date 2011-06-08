@@ -370,6 +370,7 @@ final class DocParser
         // that it is loaded
 
         // Next will be nested
+        $wasNested = $this->isNestedAnnotation;
         $this->isNestedAnnotation = true;
 
         $values = array();
@@ -386,15 +387,35 @@ final class DocParser
         $annot = new $name($values);
 
         if (!$annot instanceof AnnotationInterface) {
-            throw AnnotationException::semanticalError(sprintf('The class "%s" is not an annotation. It must implement the interface "Doctrine\Common\Annotations\Annotation".', get_class($annot)));
+            throw AnnotationException::semanticalError(sprintf('The class "%s" is not an annotation. It must implement the interface "Doctrine\Common\Annotations\Annotation\Annotation".', get_class($annot)));
         }
 
-        $targets = $annot->getTargets();
-        if (!isset($targets[AnnotationInterface::TARGET_ALL]) && !isset($targets[$this->target])) {
-            throw AnnotationException::semanticalError(sprintf('The annotation "@%s" is not allowed to be used on target "%s". Allowed targets: %s', get_class($annot), $this->target, implode(', ', $targets)));
+        $target = $wasNested ? AnnotationInterface::TARGET_NESTED_ANNOTATION : $this->target;
+        if (0 === ($annot->getTargets() & $target)) {
+            throw AnnotationException::semanticalError(sprintf('The annotation "@%s" is not allowed to be used on target "%s". Allowed targets: %s', get_class($annot), $this->getTargetLiteral($target), $this->getTargetLiteral($annot->getTargets())));
         }
 
         return $annot;
+    }
+
+    private function getTargetLiteral($target)
+    {
+        $targets = array();
+
+        if (0 !== ($target & AnnotationInterface::TARGET_CLASS)) {
+            $targets[] = 'class';
+        }
+        if (0 !== ($target & AnnotationInterface::TARGET_METHOD)) {
+            $targets[] = 'method';
+        }
+        if (0 !== ($target & AnnotationInterface::TARGET_PROPERTY)) {
+            $targets[] = 'property';
+        }
+        if (0 !== ($target & AnnotationInterface::TARGET_NESTED_ANNOTATION)) {
+            $targets[] = 'nested annotation';
+        }
+
+        return implode(', ', $targets);
     }
 
     /**

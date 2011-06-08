@@ -2,6 +2,10 @@
 
 namespace Doctrine\Tests\Common\Annotations;
 
+use Doctrine\Tests\Common\Annotations\Fixtures\AnnotationTargetTestClass;
+
+use Doctrine\Common\Annotations\Annotation\Annotation;
+
 use Doctrine\Common\Annotations\DoctrineReader;
 use Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
 use Doctrine\Common\Annotations\Annotation\IgnorePhpDoc;
@@ -166,13 +170,47 @@ abstract class AbstractReaderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Doctrine\Tests\Common\Annotations\Name', $annotation);
     }
 
+    /**
+     * @expectedException Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessage [Semantical Error] The annotation "@Doctrine\Tests\Common\Annotations\Fixtures\Annotation\Secure" is not allowed to be used on target "class". Allowed targets: method
+     */
+    public function testAnnotationTargetClassNotAllowed()
+    {
+        $reader = $this->getReader();
+
+        $ref = new \ReflectionClass(new AnnotationTargetTestClass());
+        $reader->getClassAnnotations($ref);
+    }
+
+    /**
+     * @expectedException Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessage [Semantical Error] The annotation "@Doctrine\Tests\Common\Annotations\Fixtures\Annotation\Route" is not allowed to be used on target "property". Allowed targets: class, method
+     */
+    public function testAnnotationTargetPropertyNotAllowed()
+    {
+        $reader = $this->getReader();
+
+        $ref = new \ReflectionProperty(new AnnotationTargetTestClass(), 'routeNotOnProperty');
+        $reader->getPropertyAnnotations($ref);
+    }
+
+    /**
+     * @expectedException Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessage [Semantical Error] The annotation "@Doctrine\Tests\Common\Annotations\Fixtures\Annotation\Template" is not allowed to be used on target "nested annotation". Allowed targets: method
+     */
+    public function testAnnotationNestedNotAllowed()
+    {
+        $reader = $this->getReader();
+
+        $ref = new \ReflectionMethod(new AnnotationTargetTestClass(), 'nestedAnnotation');
+        $reader->getMethodAnnotations($ref);
+    }
+
     abstract protected function getReader();
 }
 
 /**
- * @parseAnnotation("var")
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
- *
  */
 class TestParseAnnotationClass
 {
@@ -277,7 +315,7 @@ class DummyClass {
 }
 
 /**
- * @ignoreAnnotation("var")
+ * @IgnoreAnnotation("var")
  */
 class DummyClass2 {
     /**
@@ -333,7 +371,7 @@ class DummyClassPropertySyntaxError
 }
 
 /**
- * @ignoreAnnotation({"since", "var"})
+ * @IgnoreAnnotation({"since", "var"})
  */
 class DummyClassNonAnnotationProblem
 {

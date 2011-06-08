@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\Common\Annotations\Fixtures\Annotation;
 
-class Route
+use Doctrine\Common\Annotations\Annotation\Annotation;
+
+class Route implements Annotation
 {
     private $pattern;
     private $name;
@@ -11,5 +13,10 @@ class Route
     {
         $this->pattern = $values['value'];
         $this->name    = isset($values['name'])? $values['name'] : null;
+    }
+
+    public function getTargets()
+    {
+        return self::TARGET_METHOD | self::TARGET_CLASS;
     }
 }

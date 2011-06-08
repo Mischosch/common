@@ -19,7 +19,7 @@
 
 namespace Doctrine\Common\Annotations;
 
-use Doctrine\Common\Annotations\Annotation as AnnotationInterface;
+use Doctrine\Common\Annotations\Annotation\Annotation as AnnotationInterface;
 
 /**
  * Annotations class
@@ -29,7 +29,7 @@ use Doctrine\Common\Annotations\Annotation as AnnotationInterface;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-abstract class Annotation implements AnnotationInterface
+class Annotation implements AnnotationInterface
 {
     /**
      * Value property. Common among all derived classes.
@@ -73,5 +73,13 @@ abstract class Annotation implements AnnotationInterface
         throw new \BadMethodCallException(
             sprintf("Unknown property '%s' on annotation '%s'.", $name, get_class($this))
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTargets()
+    {
+        return self::TARGET_ALL;
     }
 }
