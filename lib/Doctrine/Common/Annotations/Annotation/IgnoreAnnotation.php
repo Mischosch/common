@@ -25,7 +25,7 @@ namespace Doctrine\Common\Annotations\Annotation;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-final class IgnoreAnnotation
+final class IgnoreAnnotation implements Annotation
 {
     public $names;
 
@@ -39,5 +39,12 @@ final class IgnoreAnnotation
         }
 
         $this->names = $values['value'];
+    }
+
+    public function getTargets()
+    {
+        return array(
+            Annotation::TARGET_CLASS => true,
+        );
     }
 }

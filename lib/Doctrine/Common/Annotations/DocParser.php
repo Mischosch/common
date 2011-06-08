@@ -19,6 +19,7 @@
 
 namespace Doctrine\Common\Annotations;
 
+use Doctrine\Common\Annotations\Annotation\Annotation as AnnotationInterface;
 use Closure;
 use ReflectionClass;
 
@@ -63,6 +64,13 @@ final class DocParser
      * @var array
      */
     private $imports = array();
+
+    /**
+     * The target context that is being parsed.
+     *
+     * @var string
+     */
+    private $target;
 
     /**
      * This hashmap is used internally to cache results of class_exists()
@@ -147,6 +155,11 @@ final class DocParser
     public function setImports(array $imports)
     {
         $this->imports = $imports;
+    }
+
+    public function setTarget($target)
+    {
+        $this->target = $target;
     }
 
     public function setIgnoreNotImportedAnnotations($bool)
@@ -370,7 +383,18 @@ final class DocParser
             $this->match(DocLexer::T_CLOSE_PARENTHESIS);
         }
 
-        return new $name($values);
+        $annot = new $name($values);
+
+        if (!$annot instanceof AnnotationInterface) {
+            throw AnnotationException::semanticalError(sprintf('The class "%s" is not an annotation. It must implement the interface "Doctrine\Common\Annotations\Annotation".', get_class($annot)));
+        }
+
+        $targets = $annot->getTargets();
+        if (!isset($targets[AnnotationInterface::TARGET_ALL]) && !isset($targets[$this->target])) {
+            throw AnnotationException::semanticalError(sprintf('The annotation "@%s" is not allowed to be used on target "%s". Allowed targets: %s', get_class($annot), $this->target, implode(', ', $targets)));
+        }
+
+        return $annot;
     }
 
     /**

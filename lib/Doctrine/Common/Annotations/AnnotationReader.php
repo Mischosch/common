@@ -19,6 +19,7 @@
 
 namespace Doctrine\Common\Annotations;
 
+use Doctrine\Common\Annotations\Annotation as AnnotationInterface;
 use Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
 use Closure;
 use ReflectionClass;
@@ -161,6 +162,7 @@ final class AnnotationReader implements Reader
     {
         $this->parser->setImports($this->getImports($class));
         $this->parser->setIgnoredAnnotationNames($this->getIgnoredAnnotationNames($class));
+        $this->parser->setTarget(AnnotationInterface::TARGET_CLASS);
 
         return $this->parser->parse($class->getDocComment(), 'class ' . $class->getName());
     }
@@ -199,6 +201,7 @@ final class AnnotationReader implements Reader
         $context = 'property ' . $class->getName() . "::\$" . $property->getName();
         $this->parser->setImports($this->getImports($class));
         $this->parser->setIgnoredAnnotationNames($this->getIgnoredAnnotationNames($class));
+        $this->parser->setTarget(AnnotationInterface::TARGET_PROPERTY);
 
         return $this->parser->parse($property->getDocComment(), $context);
     }
@@ -236,6 +239,7 @@ final class AnnotationReader implements Reader
         $context = 'method ' . $class->getName() . '::' . $method->getName() . '()';
         $this->parser->setImports($this->getImports($class));
         $this->parser->setIgnoredAnnotationNames($this->getIgnoredAnnotationNames($class));
+        $this->parser->setTarget(AnnotationInterface::TARGET_METHOD);
 
         return $this->parser->parse($method->getDocComment(), $context);
     }
